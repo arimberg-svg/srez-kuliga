@@ -25,7 +25,7 @@ const PEOPLE = [
 const PASS_PER_BLOCK = 8;
 const LIMIT_SEC = 40 * 60;
 const TO_EMAIL = "arimberg@gmail.com";
-const STORE_KEY = "kuliga-srez-2026";
+const STORE_KEY = "kuliga-srez-2026c";
 
 const el = {
   start: document.getElementById("screen-start"),
