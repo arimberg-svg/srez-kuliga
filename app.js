@@ -24,7 +24,7 @@ const PEOPLE = [
 
 const LIMIT_SEC = 60 * 60;
 const TO_EMAIL = "arimberg@gmail.com";
-const STORE_KEY = "kuliga-srez-2026f";
+const STORE_KEY = "kuliga-srez-2026g";
 
 const el = {
   start: document.getElementById("screen-start"),

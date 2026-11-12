@@ -105,6 +105,14 @@ h2 {
   font-size: 16px;
 }
 
+.rules-title {
+  margin: 18px 0 8px;
+  font-family: "Arial Black", Arial, sans-serif;
+  font-size: 18px;
+  font-weight: 900;
+  letter-spacing: 0;
+}
+
 .meta {
   margin: 0 0 14px;
   padding: 0;
