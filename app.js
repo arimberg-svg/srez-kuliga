@@ -24,7 +24,7 @@ const PEOPLE = [
 
 const PASS_PER_BLOCK = 8;
 const LIMIT_SEC = 40 * 60;
-const TO_EMAIL = "a.rimberg@um-ural.ru";
+const TO_EMAIL = "arimberg@gmail.com";
 const STORE_KEY = "kuliga-srez-2026";
 
 const el = {
@@ -404,8 +404,15 @@ async function sendMail(report) {
     headers: { "Content-Type": "application/json", Accept: "application/json" },
     body: JSON.stringify(payload),
   });
+  const data = await response.json().catch(() => ({}));
   if (!response.ok) throw new Error(String(response.status));
-  return response.json();
+  const message = String(data.message || "");
+  if (String(data.success) === "false" || /activat/i.test(message)) {
+    const error = new Error(message || "activation");
+    error.activation = true;
+    throw error;
+  }
+  return data;
 }
 
 async function finish(timeNote) {
@@ -423,12 +430,16 @@ async function finish(timeNote) {
   showResult(report, "Отправляем результат…");
   try {
     await sendMail(report);
-    const note = "Результат ушёл Александре Римберг на почту.";
+    const note = "Результат ушёл на arimberg@gmail.com.";
     const saved = readSaved(person.fio);
     saved.mailNote = note;
     writeSaved(person.fio, saved);
     el.mailStatus.textContent = note;
   } catch (err) {
+    if (err && err.activation) {
+      el.mailStatus.textContent = "На arimberg@gmail.com ушло письмо для подтверждения почты. Откройте его и нажмите ссылку. После этого ответы начнут приходить.";
+      return;
+    }
     const body = encodeURIComponent(report.message.slice(0, 1500));
     const subject = encodeURIComponent(report.subject);
     el.mailStatus.innerHTML =
