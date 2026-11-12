@@ -22,10 +22,9 @@ const PEOPLE = [
   },
 ];
 
-const PASS_PER_BLOCK = 8;
-const LIMIT_SEC = 40 * 60;
+const LIMIT_SEC = 45 * 60;
 const TO_EMAIL = "arimberg@gmail.com";
-const STORE_KEY = "kuliga-srez-2026c";
+const STORE_KEY = "kuliga-srez-2026d";
 
 const el = {
   start: document.getElementById("screen-start"),
@@ -155,11 +154,15 @@ function syncStart() {
 }
 
 const CORRECT_AT = [
-  1, 3, 0, 2, 2, 0, 3, 1, 0, 2,
-  1, 3, 3, 1, 0, 2, 1, 0, 2, 3,
-  3, 2, 0, 1, 2, 1, 3, 0, 0, 3,
-  1, 2, 2, 0, 1, 3, 1, 3, 2, 0,
+  1, 3, 0, 2, 2, 0, 3, 1, 0, 2, 1, 3,
+  3, 1, 0, 2, 1, 0, 2, 3, 0, 2, 1,
+  3, 2, 0, 1, 2, 1, 3, 0, 0, 3, 2,
+  1, 2, 2, 0, 1, 3, 1, 3, 2, 0, 3,
 ];
+
+function normOf(total) {
+  return Math.round(total * 0.8);
+}
 
 function displayOrder(questionIndex, answerIndex) {
   const place = CORRECT_AT[questionIndex];
@@ -290,14 +293,14 @@ function buildReport(answerList, timeNote) {
   const blocks = blockStats(answerList);
   const correct = blocks.reduce((sum, block) => sum + block.ok, 0);
   const total = questions.length;
-  const weak = blocks.filter((block) => block.ok < PASS_PER_BLOCK);
+  const weak = blocks.filter((block) => block.ok < normOf(block.total));
   const lines = [];
   lines.push(`Срез знаний. Кулига`);
   lines.push(person.fio);
   lines.push(`${person.position}. ${person.department}`);
   lines.push(`${correct} из ${total}`);
   blocks.forEach((block) => {
-    const mark = block.ok >= PASS_PER_BLOCK ? "норма есть" : "ниже нормы";
+    const mark = block.ok >= normOf(block.total) ? "норма есть" : "ниже нормы";
     lines.push(`${block.name}: ${block.ok} из ${block.total}, ${mark}`);
   });
   if (timeNote) lines.push(timeNote);
@@ -331,10 +334,10 @@ function showResult(report, mailNote) {
   el.scorePercent.textContent = `${Math.round((report.correct / report.total) * 100)}% верных`;
   el.scoreTitle.textContent = `${person.fio}`;
   if (!report.weak.length) {
-    el.verdict.textContent = "По каждому блоку норма есть: 8 из 10 или больше. Срез ровный.";
+    el.verdict.textContent = "По каждому блоку норма есть: восемь верных из десяти. Срез ровный.";
   } else {
     const names = report.weak.map((block) => `${block.name} (${block.ok} из ${block.total})`).join(", ");
-    el.verdict.textContent = `Норма 8 из 10. Пока не дотягивает: ${names}.`;
+    el.verdict.textContent = `Норма: восемь верных из десяти в блоке. Пока не дотягивает: ${names}.`;
   }
   if (report.timeNote) {
     el.verdict.textContent += ` ${report.timeNote}`;
@@ -348,7 +351,7 @@ function showResult(report, mailNote) {
     title.innerHTML = `<strong>${block.name}</strong>`;
     const mark = document.createElement("div");
     mark.className = "mark";
-    mark.textContent = block.ok >= PASS_PER_BLOCK
+    mark.textContent = block.ok >= normOf(block.total)
       ? `${block.ok} из ${block.total}. Норма есть`
       : `${block.ok} из ${block.total}. Ниже нормы`;
     card.append(title, mark);
