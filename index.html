@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Срез знаний. Кулига</title>
+  <meta name="description" content="40 вопросов для магазина в Кулиге: компания, юрлица, касса и склад." />
+  <meta name="robots" content="noindex, nofollow" />
+  <meta name="theme-color" content="#4208A8" />
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="styles.css?v=20261112" />
+</head>
+<body>
+  <header class="top">
+    <div class="wrap top-inner">
+      <img class="brand-logo" src="assets/logo.png" alt="У Михалыча" width="250" />
+      <span class="chip">Кулига · срез</span>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section id="screen-start" class="panel">
+      <p class="motto">Делаем мир крепче</p>
+      <h1>Срез знаний. Кулига</h1>
+      <p class="lead">Короткий срез по смене: как устроена компания, как отпускаем товар юрлицу, как ведём кассу и как принимаем машину и заказы на перемещение.</p>
+      <ul class="meta">
+        <li>40 вопросов, четыре блока по 10</li>
+        <li>Компания, юрлица, касса, склад</li>
+        <li>40 минут. Один верный ответ</li>
+        <li>Норма: 8 из 10 в каждом блоке</li>
+      </ul>
+      <p class="form-note">Пока идёт тест, правильный ответ не показываем. Разбор откроется в конце. Одна сдача на человека. Результат уйдёт Александре Римберг.</p>
+
+      <form id="start-form" class="start-form" novalidate>
+        <label class="name-field">
+          <span>Кто проходит <em>*</em></span>
+          <select id="user-person" name="person" required>
+            <option value="" disabled selected>Выберите себя</option>
+          </select>
+        </label>
+        <p id="person-meta" class="person-meta" hidden></p>
+        <p id="attempt-note" class="form-note" hidden></p>
+        <p id="form-error" class="form-error" hidden>Выберите себя в списке.</p>
+        <button type="submit" class="btn primary" id="btn-start">Начать</button>
+        <button type="button" class="btn ghost" id="btn-open-review" hidden>Открыть свой результат</button>
+      </form>
+    </section>
+
+    <section id="screen-quiz" class="panel" hidden>
+      <div class="topbar">
+        <div class="progress-wrap" aria-hidden="true">
+          <div class="progress-bar" id="progress-bar"></div>
+        </div>
+        <div class="topmeta">
+          <span id="q-counter">1 / 40</span>
+          <span id="q-timer" class="timer">40:00</span>
+          <span id="q-topic" class="topic"></span>
+        </div>
+      </div>
+      <h2 id="q-text"></h2>
+      <div id="options" class="options" role="radiogroup" aria-labelledby="q-text"></div>
+      <div class="nav">
+        <button type="button" class="btn ghost" id="btn-prev">Назад</button>
+        <button type="button" class="btn primary" id="btn-next" disabled>Далее</button>
+      </div>
+    </section>
+
+    <section id="screen-result" class="panel" hidden>
+      <p class="eyebrow">Результат</p>
+      <h1 id="score-title">Ваш результат</h1>
+      <p class="scoreline"><span id="score-num">0</span><span class="slash">/</span><span id="score-total">40</span></p>
+      <p id="score-percent" class="score-percent"></p>
+      <p id="score-verdict" class="lead"></p>
+      <p id="mail-status" class="mail-status" aria-live="polite"></p>
+      <h2 class="section-title">По блокам</h2>
+      <div id="topic-stats" class="topic-stats"></div>
+      <h2 class="section-title">Разбор</h2>
+      <p class="review-hint">Сначала ошибки, потом верные ответы.</p>
+      <div id="review" class="review"></div>
+    </section>
+  </main>
+
+  <footer class="foot">
+    <div class="wrap">
+      <p>Делаем мир крепче · срез знаний · ноябрь 2026</p>
+    </div>
+  </footer>
+
+  <script src="questions.js?v=20261112"></script>
+  <script src="app.js?v=20261112"></script>
+</body>
+</html>
