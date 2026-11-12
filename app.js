@@ -22,9 +22,9 @@ const PEOPLE = [
   },
 ];
 
-const LIMIT_SEC = 45 * 60;
+const LIMIT_SEC = 60 * 60;
 const TO_EMAIL = "arimberg@gmail.com";
-const STORE_KEY = "kuliga-srez-2026d";
+const STORE_KEY = "kuliga-srez-2026e";
 
 const el = {
   start: document.getElementById("screen-start"),
@@ -158,6 +158,9 @@ const CORRECT_AT = [
   3, 1, 0, 2, 1, 0, 2, 3, 0, 2, 1,
   3, 2, 0, 1, 2, 1, 3, 0, 0, 3, 2,
   1, 2, 2, 0, 1, 3, 1, 3, 2, 0, 3,
+  2, 0, 3, 1, 2, 0, 3, 1, 0, 2, 3, 1,
+  0, 3, 1, 2, 0, 3, 1, 2, 0, 3, 1, 2,
+  3, 0, 2,
 ];
 
 function normOf(total) {
