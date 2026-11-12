@@ -1,6 +1,6 @@
 const PEOPLE = [
   {
-    fio: "Баев Андрей Анатольевич",
+    fio: "Баев Андрей",
     position: "Продавец-консультант",
     department: "Магазин №23, с. Кулига, ул. Доломитовая, зд. 2",
   },
@@ -15,7 +15,7 @@ const PEOPLE = [
     department: "Магазин №23, с. Кулига, ул. Доломитовая, зд. 2",
   },
   {
-    fio: "Римберг Александра Александровна",
+    fio: "Римберг Александра",
     position: "Менеджер по обучению и развитию персонала",
     department: "Служба управления бизнес-процессами",
     reviewer: true,
@@ -24,7 +24,7 @@ const PEOPLE = [
 
 const LIMIT_SEC = 60 * 60;
 const TO_EMAIL = "arimberg@gmail.com";
-const STORE_KEY = "kuliga-srez-2026e";
+const STORE_KEY = "kuliga-srez-2026f";
 
 const el = {
   start: document.getElementById("screen-start"),
@@ -160,7 +160,6 @@ const CORRECT_AT = [
   1, 2, 2, 0, 1, 3, 1, 3, 2, 0, 3,
   2, 0, 3, 1, 2, 0, 3, 1, 0, 2, 3, 1,
   0, 3, 1, 2, 0, 3, 1, 2, 0, 3, 1, 2,
-  3, 0, 2,
 ];
 
 function normOf(total) {
