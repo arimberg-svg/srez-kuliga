@@ -276,7 +276,25 @@ select {
   font-size: 16px;
 }
 
-.mail-status a { color: var(--violet); }
+.mail-status p { margin: 0 0 10px; }
+
+.mail-actions {
+  display: grid;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.mail-actions .btn { width: 100%; }
+
+.mail-copy {
+  width: 100%;
+  min-height: 160px;
+  padding: 10px;
+  border: 1px solid var(--line);
+  font: inherit;
+  color: var(--ink);
+  background: var(--paper);
+}
 
 .section-title { margin: 8px 0 10px; }
 

@@ -393,31 +393,113 @@ function escapeHtml(value) {
 }
 
 async function sendMail(report) {
-  const payload = {
-    _subject: report.subject,
-    _captcha: "false",
-    _template: "box",
-    name: person.fio,
-    email: TO_EMAIL,
-    Должность: person.position,
-    Подразделение: person.department,
-    Балл: `${report.correct} из ${report.total}`,
-    message: report.message,
-  };
-  const response = await fetch(`https://formsubmit.co/ajax/${TO_EMAIL}`, {
+  const params = new URLSearchParams();
+  params.set("_subject", report.subject);
+  params.set("_captcha", "false");
+  params.set("_template", "box");
+  params.set("name", person.fio);
+  params.set("Должность", person.position);
+  params.set("Подразделение", person.department);
+  params.set("Балл", `${report.correct} из ${report.total}`);
+  let message = report.message;
+  if (message.length > 8000) {
+    message = `${message.slice(0, 8000)}\n… Дальше текст не влез в письмо. Полный разбор остаётся на экране телефона.`;
+  }
+  params.set("message", message);
+  const response = await fetch(`https://formsubmit.co/ajax/${encodeURIComponent(TO_EMAIL)}`, {
     method: "POST",
-    headers: { "Content-Type": "application/json", Accept: "application/json" },
-    body: JSON.stringify(payload),
+    headers: { Accept: "application/json" },
+    body: params,
   });
-  const data = await response.json().catch(() => ({}));
-  if (!response.ok) throw new Error(String(response.status));
-  const message = String(data.message || "");
-  if (String(data.success) === "false" || /activat/i.test(message)) {
-    const error = new Error(message || "activation");
-    error.activation = true;
+  const raw = await response.text();
+  let data = {};
+  try {
+    data = JSON.parse(raw);
+  } catch (err) {
+    data = {};
+  }
+  const messageText = String(data.message || "");
+  if (!response.ok || String(data.success) !== "true") {
+    const error = new Error(messageText || String(response.status || "send"));
+    error.activation = /activat/i.test(messageText);
     throw error;
   }
   return data;
+}
+
+function rememberMail(note) {
+  const saved = readSaved(person.fio);
+  if (!saved) return;
+  saved.mailNote = note;
+  writeSaved(person.fio, saved);
+}
+
+function showMailFail(report) {
+  el.mailStatus.textContent = "";
+  const note = document.createElement("p");
+  note.textContent = "С этого телефона письмо само не ушло. Нажмите «Отправить снова». Если опять не выйдет, скопируйте текст ниже и пришлите его Александре.";
+  const actions = document.createElement("div");
+  actions.className = "mail-actions";
+  const retry = document.createElement("button");
+  retry.type = "button";
+  retry.className = "btn primary";
+  retry.textContent = "Отправить снова";
+  retry.addEventListener("click", () => {
+    deliver(report);
+  });
+  const copy = document.createElement("button");
+  copy.type = "button";
+  copy.className = "btn ghost";
+  copy.textContent = "Скопировать результат";
+  copy.addEventListener("click", async () => {
+    const text = report.message;
+    let ok = false;
+    try {
+      await navigator.clipboard.writeText(text);
+      ok = true;
+    } catch (err) {
+      ok = false;
+    }
+    copy.textContent = ok ? "Скопировано" : "Выделите текст ниже и скопируйте";
+  });
+  const area = document.createElement("textarea");
+  area.className = "mail-copy";
+  area.readOnly = true;
+  area.value = report.message;
+  actions.append(retry, copy);
+  el.mailStatus.append(note, actions, area);
+}
+
+async function deliver(report) {
+  el.mailStatus.textContent = "Отправляем результат…";
+  try {
+    await sendMail(report);
+    const note = "Результат ушёл на arimberg@gmail.com.";
+    rememberMail(note);
+    el.mailStatus.textContent = note;
+  } catch (err) {
+    if (err && err.activation) {
+      const note = "Почта для ответов ещё не подтверждена. Александре нужно открыть письмо от FormSubmit и нажать ссылку. После этого результат уйдёт.";
+      rememberMail(note);
+      el.mailStatus.textContent = note;
+      return;
+    }
+    try {
+      await sendMail(report);
+      const note = "Результат ушёл на arimberg@gmail.com.";
+      rememberMail(note);
+      el.mailStatus.textContent = note;
+    } catch (second) {
+      if (second && second.activation) {
+        const note = "Почта для ответов ещё не подтверждена. Александре нужно открыть письмо от FormSubmit и нажать ссылку. После этого результат уйдёт.";
+        rememberMail(note);
+        el.mailStatus.textContent = note;
+        return;
+      }
+      rememberMail("Письмо с телефона само не ушло.");
+      showMailFail(report);
+    }
+  }
 }
 
 async function finish(timeNote) {
@@ -433,23 +515,7 @@ async function finish(timeNote) {
     fio: person.fio,
   });
   showResult(report, "Отправляем результат…");
-  try {
-    await sendMail(report);
-    const note = "Результат ушёл на arimberg@gmail.com.";
-    const saved = readSaved(person.fio);
-    saved.mailNote = note;
-    writeSaved(person.fio, saved);
-    el.mailStatus.textContent = note;
-  } catch (err) {
-    if (err && err.activation) {
-      el.mailStatus.textContent = "На arimberg@gmail.com ушло письмо для подтверждения почты. Откройте его и нажмите ссылку. После этого ответы начнут приходить.";
-      return;
-    }
-    const body = encodeURIComponent(report.message.slice(0, 1500));
-    const subject = encodeURIComponent(report.subject);
-    el.mailStatus.innerHTML =
-      `Автоматически отправить не получилось. <a href="mailto:${TO_EMAIL}?subject=${subject}&body=${body}">Открыть письмо вручную</a>`;
-  }
+  await deliver(report);
 }
 
 function openSaved() {
