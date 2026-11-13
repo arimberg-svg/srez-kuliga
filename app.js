@@ -231,6 +231,12 @@ function saveProgress() {
   });
 }
 
+function offerResend(saved) {
+  if (!saved || !saved.report) return;
+  if (saved.mailNote && saved.mailNote.indexOf("ушёл") !== -1) return;
+  showMailFail(saved.report);
+}
+
 function startQuiz(event) {
   event.preventDefault();
   person = selectedPerson();
@@ -241,6 +247,7 @@ function startQuiz(event) {
   const saved = readSaved(person.fio);
   if (saved && saved.done && !person.reviewer) {
     showResult(saved.report, saved.mailNote || "Это сохранённый результат этой сдачи.");
+    offerResend(saved);
     return;
   }
   if (saved && saved.started && !saved.done && !person.reviewer) {
@@ -524,6 +531,7 @@ function openSaved() {
   const saved = readSaved(person.fio);
   if (!saved || !saved.done) return;
   showResult(saved.report, saved.mailNote || "Это сохранённый результат этой сдачи.");
+  offerResend(saved);
 }
 
 el.form.addEventListener("submit", startQuiz);
